@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Faye Sinatra Chat</title>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+</head>
+<body> 
+	<div class="container">   	
+		<h1>Faye Sinatra Chat</h1> 
+		
+	    <legend>Join/Create a Room</legend>
+	   
+	    <form class="form-inline" action="/room" method="get">
+		    <fieldset>
+			    <input name="room" type="text" placeholder="Enter the room name..."/> 
+			    <input name="username" type="text" placeholder="Enter a name..."/>
+			    <button type="submit" class="btn btn-inverse">Join/Create</button>   
+		    </fieldset> 
+	    </form> 
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script> 
+</body>
+</html>

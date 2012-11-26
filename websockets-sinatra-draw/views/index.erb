@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>WebSockets Sinatra Draw</title>
+	<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">   
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="/styles/draw.css" rel="stylesheet" media="screen"> 
+</head>
+<body> 
+	<div class="container">   	
+		<h1 class="visible-desktop">WebSockets Sinatra Draw</h1> 
+		
+	    <legend>Draw Something</legend>
+	    
+	    <div id="whiteboard" class="well well-small">
+        	<canvas id="draw-canvas"></canvas>
+        </div> 
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>  
+	<script src="/js/jquery.mobile-events.js"></script>
+	<script type="text/javascript"> 
+	window.onload = function () {
+	    document.body.onresize = function () {
+	       var canvasNode = document.getElementById('draw-canvas');
+	       canvasNode.width = canvasNode.parentNode.clientWidth;
+	       canvasNode.height = canvasNode.parentNode.clientHeight;
+	    }
+	    document.body.onresize();
+	};
+	
+	$(document).ready(function() {   
+		var $canvas = $('#draw-canvas');  
+		var ws = new WebSocket("ws://" + location.hostname + ":8080"); 
+		
+		var currentX = 0;
+        var currentY = 0;
+        var lastX, lastY, lastReceivedX, lastReceivedY; 
+		var drawing = false;
+
+		var ctx = $('#draw-canvas')[0].getContext('2d');
+		
+        $canvas.bind('mousemove',function(ev){
+            ev = ev || window.event;
+            currentX = ev.pageX - $canvas.offset().left;  
+            currentY = ev.pageY - $canvas.offset().top;
+        });  
+
+        $canvas.bind('touchmove',function(ev){ 
+		      var touch = ev.originalEvent.touches[0] || ev.originalEvent.changedTouches[0];
+		      currentX = touch.pageX - $canvas.offset().left;  
+	          currentY = touch.pageY - $canvas.offset().top; 
+        });
+        
+        $canvas.bind('tapstart',function(ev){
+            drawing = true
+        });
+        
+        $canvas.bind('tapend',function(ev){
+            drawing = false
+        });              
+        
+        ws.onopen = function(event) {
+          setInterval(function() {
+            if ((currentX !== lastX || currentY !== lastY) && drawing) {
+              lastX = currentX;
+              lastY = currentY;
+              ws.send(JSON.stringify({ x: currentX, y: currentY}));
+            }
+          }, 30);
+        }
+		
+		ws.onmessage = function(event) {
+			var msg = $.parseJSON(event.data);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastReceivedX, lastReceivedY);
+            ctx.lineTo(msg.x, msg.y);
+            ctx.closePath();
+            ctx.stroke();
+            lastReceivedX = msg.x;
+            lastReceivedY = msg.y;
+		};   
+	}); 
+	</script>
+</body>
+</html>

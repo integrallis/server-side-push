@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>IFrame Streaming</title>
+	<!-- Bootstrap -->
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+</head>
+<body> 
+	<div class="container">
+		<h1>XHR Streaming</h1>  
+		
+		<div class="hero-unit">
+	    	<h1 id="the-word">Word</h1>
+	    	<p id="the-meaning">Meaning</p>
+	    	<p>
+	    		<button id="kick-it-button" class="btn btn-large btn-inverse" type="button">Kick it!</button>
+	    	</p>
+	    </div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript"> 
+	    var $kickItButton = $("#kick-it-button");
+	    var $theWord = $("#the-word");
+	    var $theMeaning = $("#the-meaning");  
+        
+        // called by the streamed server-sent script
+	    function updatePage(word, meaning) {   
+		  $theWord.text(word);
+		  $theMeaning.text(meaning);
+	    }
+
+		$(document).ready(function() {
+		  $kickItButton.click(function() { 
+			// disable the button while we get a stream from the server
+		    $kickItButton.attr('disabled', true);
+		
+		    var interval, last_index, parse, url, xhr; 
+		    
+		    // parse function will grab the last complete JSON response from the stream
+		    parse = function() {
+		      var curr_index, s;
+		      curr_index = xhr.responseText.length;
+		      if (last_index === curr_index) {
+		        return;
+		      }
+		      s = xhr.responseText.substring(last_index, curr_index);
+		      last_index = curr_index;
+		      console.log("Just gotz this from the server... " + s); 
+		      var content = $.parseJSON(s);  
+		      updatePage(content[0], content[1]);
+		    };
+		    
+		    // we'll create a XHR the old school way
+		    xhr = new XMLHttpRequest();
+		    url = "/stream";
+		    xhr.open("GET", url, true);
+		    xhr.send();
+		
+		    // then we'll keep on grabbing data every 1/2 second
+		    last_index = 0;
+		    interval = setInterval(parse, 500);
+		    setTimeout((function() {
+		      clearInterval(interval);
+		      parse();
+		      xhr.abort();  
+			  $kickItButton.attr('disabled', false);
+	          $kickItButton.text('Kick it again!');
+		    }), 20000); // and time it out after 20 seconds
+		  });
+		});
+	  </script> 
+</body>
+</html>

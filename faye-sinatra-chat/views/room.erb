@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Faye Sinatra Chat</title>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+	<style type="text/css">
+	#messages {
+	    height: 150px;
+	    overflow-y: scroll;
+	    max-height: 150px;
+	}
+	</style>
+</head>
+<body> 
+	<div class="container">   	
+		<h1>Faye Sinatra Chat</h1> 
+		
+		<legend>Messages in Room <%= room %></legend> 
+		 
+		<div class="well" id="messages">
+	    </div>
+	             
+	    <legend><%= username %></legend> 
+	
+	    <form class="form-inline" id="chat-form">
+		    <fieldset>
+			    <input id="message" type="text" placeholder="Type something…" />
+			    <button type="submit" class="btn btn-inverse">Submit</button>   
+		    </fieldset> 
+	    </form>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>  
+	<script src="/faye.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+
+	$(document).ready(function() {
+		var client = new Faye.Client('/faye');
+		client.disable('websocket');
+		var subscription = client.subscribe('/<%= room %>', function(message) {
+			$messages = $('#messages'); 
+			$message = $('<div class="alert alert-success"><i class="icon-user"></i> ' + message['user'] + ' : ' + message['text'] +'</div>')
+			$messages.append($message); 
+			$messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 500);
+			$("div div:last-child").effect("highlight", {}, 2000); 
+		});  
+		
+		$("#chat-form").submit(function(e){
+			e.preventDefault();
+			var message = $('#message').val();
+			client.publish('/<%= room %>', {user: '<%= username %>', text: message}); 
+			$('#message').val('');
+		}); 
+	});
+	</script> 
+</body>
+</html>

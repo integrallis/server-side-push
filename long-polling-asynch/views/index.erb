@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Long Polling</title>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+</head>
+<body> 
+	<div class="container">
+		<h1>Long Polling with EM</h1>  
+		 
+		<div class="well" id="messages">
+	    </div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript"> 
+	var timestamp = null;
+	function longPoll() {
+		$.ajax({
+			type : 'get',
+			url  : '/read?timestamp=' + timestamp,
+			async : true,
+			cache : false,
+			timeout : 10000,
+
+			success : function(json) { 
+				var messages = json['messages'].split("\n")
+				var last = messages[messages.length-1];
+				if (last) {
+				    console.log("Last message ==> " + last);
+				    $('#messages').append('<div class="alert alert-success"><i class="icon-bullhorn"></i> '+last+'</div>');  
+					timestamp  = json['timestamp'];
+				}
+				setTimeout(longPoll, 1000);  
+			},
+			error : function(xhr, textStatus, error) {
+			   // we should probably check the textStatus to make sure that it is a timeout
+			   setTimeout(longPoll, 3000);
+			}		
+		});
+	}
+
+	$(document).ready(function() {
+	    longPoll();
+	});
+	</script> 
+</body>
+</html>

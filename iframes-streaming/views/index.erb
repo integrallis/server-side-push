@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>IFrame Streaming</title>
+	<!-- Bootstrap -->
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+</head>
+<body> 
+	<div class="container">
+		<h1>IFrame Streaming</h1>  
+		
+		<div class="hero-unit">
+	    	<h1 id="the-word">Word</h1>
+	    	<p id="the-meaning">Meaning</p>
+	    	<p>
+	    		<button id="kick-it-button" class="btn btn-large btn-inverse" type="button">Kick it!</button>
+	    	</p>
+	    </div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript"> 
+	    var $kickItButton = $("#kick-it-button");
+	    var $theWord = $("#the-word");
+	    var $theMeaning = $("#the-meaning");  
+	
+	    function kickIt() {
+	      // create an invisible iframe
+	      $('<iframe />', {
+		    name: 'hidden-iframe',
+		    id:   'hidden-iframe',
+		    src:  '/long-running',
+		    css:  { 'display': 'none' }
+		  }).appendTo('body');
+
+	      // disable the button while we get a stream from the server
+	      $kickItButton.attr('disabled', true);
+	    }
+        
+        // called by the streamed server-sent script
+	    function updatePage(percent, word, meaning) {  
+		  $kickItButton.text(percent + '%'); 
+		  $theWord.text(word);
+		  $theMeaning.text(meaning);
+	      if (percent == 100) {
+		    $kickItButton.attr('disabled', false);
+            $kickItButton.text('Kick it again!');
+	      }
+	    }
+	
+	    $(document).ready(function() {
+           $kickItButton.click(function() { kickIt() });
+		});
+	  </script> 
+</body>
+</html>
