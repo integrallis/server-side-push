@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Server-Sent Events</title>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+	<style type="text/css">
+	#messages {
+	    height: 250px;
+	    overflow-y: scroll;
+	    max-height: 250px;
+	}
+	</style>
+</head>
+<body> 
+	<div class="container">
+		<h1>Server-Sent Events with Sinatra-SSE</h1>  
+		 
+		<div class="well" id="messages">
+	  </div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var source = new EventSource('/ticktock');
+
+		source.addEventListener('timer', function(event) {
+			data = event.data;
+			$messages = $('#messages'); 
+		  $messages.append('<div class="alert alert-success"><i class="icon-time"></i> '+data+'</div>');
+		  $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 500);
+			$("#messages div:last-child").effect("highlight", {}, 2000);
+		});
+	</script> 
+</body>
+</html>

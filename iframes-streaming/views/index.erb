@@ -39,18 +39,18 @@
         
         // called by the streamed server-sent script
 	    function updatePage(percent, word, meaning) {  
-		  $kickItButton.text(percent + '%'); 
-		  $theWord.text(word);
-		  $theMeaning.text(meaning);
-	      if (percent == 100) {
-		    $kickItButton.attr('disabled', false);
-            $kickItButton.text('Kick it again!');
-	      }
+			  $kickItButton.text(percent + '%'); 
+			  $theWord.text(word);
+			  $theMeaning.text(meaning);
+		      if (percent == 100) {
+			    $kickItButton.attr('disabled', false);
+	            $kickItButton.text('Kick it again!');
+		      }
 	    }
 	
 	    $(document).ready(function() {
            $kickItButton.click(function() { kickIt() });
-		});
+		  });
 	  </script> 
 </body>
 </html>

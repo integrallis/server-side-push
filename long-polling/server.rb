@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'json' 
 
+set :server, 'thin'
+
 get '/' do
   erb :index
 end 
@@ -12,14 +14,16 @@ get '/read' do
   
   # ... client (might) pass the last time they received an update 
 	last = params[:timestamp] == 'null' ? 0 : params[:timestamp].to_i
+
 	current = last_modification(filename)  
+	last = last || current
   
   # ... and we're blocking until the file changes 
   not_changed_or_emtpy = true
 	while (not_changed_or_emtpy) do
+	  current = last_modification(filename)
 		sleep 0.1 
 		not_changed_or_emtpy = File.zero?(filename) || (current <= last)
-		current = last_modification(filename)
 	end 
 
 	{ :messages => File.read(filename), :timestamp => current }.to_json

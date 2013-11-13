@@ -24,10 +24,10 @@
 	    var $theWord = $("#the-word");
 	    var $theMeaning = $("#the-meaning");  
         
-        // called by the streamed server-sent script
+      // called by the streamed server-sent script
 	    function updatePage(word, meaning) {   
-		  $theWord.text(word);
-		  $theMeaning.text(meaning);
+		    $theWord.text(word);
+		    $theMeaning.text(meaning);
 	    }
 
 		$(document).ready(function() {
@@ -64,8 +64,8 @@
 		      clearInterval(interval);
 		      parse();
 		      xhr.abort();  
-			  $kickItButton.attr('disabled', false);
-	          $kickItButton.text('Kick it again!');
+			    $kickItButton.attr('disabled', false);
+	        $kickItButton.text('Kick it again!');
 		    }), 20000); // and time it out after 20 seconds
 		  });
 		});
