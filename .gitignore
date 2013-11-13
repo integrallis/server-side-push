@@ -12,6 +12,8 @@ test/tmp
 test/version_tmp
 tmp  
 data.txt
+.DS_Store
+.redcar
 
 # YARD artifacts
 .yardoc
